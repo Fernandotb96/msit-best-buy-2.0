@@ -1,13 +1,6 @@
 import products
 import store
 
-# Initial setup of inventory and store
-product_list = [products.Product("MacBook Air M2", price=1450, quantity=100),
-                products.Product("Bose QuietComfort Earbuds", price=250, quantity=500),
-                products.Product("Google Pixel 7", price=500, quantity=250)
-                ]
-best_buy = store.Store(product_list)
-
 
 def print_menu():
     """Display the main menu options.Display the main menu options."""
@@ -60,7 +53,7 @@ def make_order(shop):
         if amount_choice == "":
             break
         if not amount_choice.isdigit():
-            print("Error adding quantity! Must be a number.")
+            print("Error adding quantity! Must be a positive number.")
             continue
         # Order product in store
         selected_product = active_products[int(product_choice) - 1]
@@ -95,4 +88,11 @@ def start(shop):
 
 
 if __name__ == "__main__":
+    # Initial setup of inventory and store
+    product_list = [products.Product("MacBook Air M2", price=1450, quantity=100),
+                    products.Product("Bose QuietComfort Earbuds", price=250, quantity=500),
+                    products.Product("Google Pixel 7", price=500, quantity=250)
+                    ]
+    best_buy = store.Store(product_list)
+    # Start shop
     start(best_buy)
