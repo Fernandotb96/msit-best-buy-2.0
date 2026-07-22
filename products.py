@@ -74,7 +74,7 @@ class NonStockedProduct(Product):
         self.activate()
 
     def show(self):
-        """Print the product information."""
+        """Print the product information but quantity is unlimited."""
         print(f"{self.name}, Price: {self.price}, Quantity: Unlimited")
 
     def set_quantity(self, quantity):
@@ -93,3 +93,26 @@ class NonStockedProduct(Product):
             print("Product inactive or out of stock!")
             return 0.0
         return self.price * requested_quantity
+
+
+class LimitedProduct(Product):
+    """
+    Represents a product that can only be purchased up to a maximum quantity per order
+    (e.g., shipping fee, limited edition items, promotional items).
+    """
+    def __init__(self, name, price, quantity, maximum):
+        if not isinstance(maximum, int) or maximum <= 0:
+            raise ValueError("Maximum quantity must be a positive integer.")
+        super().__init__(name, price, quantity)
+        self.maximum = maximum
+
+    def show(self):
+        """Print the product information and how many units can be purchased."""
+        print(f"{self.name}, Price: {self.price}, Quantity: {self.quantity}, "
+              f"Limited to {self.maximum} per order")
+
+    def buy(self, requested_quantity):
+        """Purchase a given quantity of the product, only purchase up to the maximum allowed."""
+        if requested_quantity > self.maximum:
+            raise ValueError(f"Product '{self.name}' can only be purchased up to {self.maximum} time(s) per order.")
+        return super().buy(requested_quantity)
