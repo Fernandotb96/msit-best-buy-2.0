@@ -37,8 +37,8 @@ def make_order(shop):
     """
     print_products_stock(shop)
     print("When you want to finish the order, press Enter without typing anything.")
-    total_shopping = 0
     active_products = shop.get_all_products()
+    cart = {}
 
     while True:
         # Ask for product number
@@ -52,16 +52,21 @@ def make_order(shop):
         amount_choice = input("Enter the product amount you want to buy: ").strip()
         if amount_choice == "":
             break
-        if not amount_choice.isdigit():
+        if not amount_choice.isdigit() or int(amount_choice) < 0:
             print("Error adding quantity! Must be a positive number.")
             continue
-        # Order product in store
+        # Add product to cart
         selected_product = active_products[int(product_choice) - 1]
         selected_quantity = int(amount_choice)
-        cost_items = shop.order([(selected_product, selected_quantity)])
-        if cost_items:
-            total_shopping += cost_items
-            print(f"Added {selected_product.name} x {selected_quantity} to your cart!\n")
+        cart[selected_product] = cart.get(selected_product, 0) + selected_quantity
+        print(f"Added {selected_product.name} x {selected_quantity} to your cart!\n")
+    # Make the order
+    shopping_cart = list(cart.items())
+    try:
+        total_shopping = shop.order(shopping_cart)
+    except ValueError as e:
+        print(f"Order error: {e}")
+        total_shopping = 0
     print(f"Order processed successfully! Total payment: {total_shopping}$")
 
 
