@@ -1,9 +1,10 @@
 import products
 import store
+import promotions
 
 
 def print_menu():
-    """Display the main menu options.Display the main menu options."""
+    """Display the main menu options."""
     print("""
         Best Buy Shop
 -----------------------------
@@ -19,7 +20,10 @@ def print_products_stock(shop):
     print("----- Products in stock -----")
     shop_products = shop.get_all_products()
     for index, product in enumerate(shop_products, start=1):
-        print(f"{index}. {product.name}, Price: ${product.price}, Quantity: {product.quantity}")
+        promotion = product.get_promotion()
+        promotion_text = f", Promotion: {promotion.name}" if promotion else ""
+        print(f"{index}. {product.name}, Price: ${product.price}, "
+              f"Quantity: {product.quantity}{promotion_text}")
     print("-" * 29)
 
 
@@ -55,12 +59,13 @@ def make_order(shop):
         if not amount_choice.isdigit() or int(amount_choice) < 0:
             print("Error adding quantity! Must be a positive number.")
             continue
-        # Add product to cart
+        # Add order to cart
         selected_product = active_products[int(product_choice) - 1]
         selected_quantity = int(amount_choice)
         cart[selected_product] = cart.get(selected_product, 0) + selected_quantity
         print(f"Added {selected_product.name} x {selected_quantity} to your cart!\n")
-    # Make the order
+
+    # Process the order
     shopping_cart = list(cart.items())
     try:
         total_shopping = shop.order(shopping_cart)
@@ -93,13 +98,26 @@ def start(shop):
 
 
 if __name__ == "__main__":
-    # Initial setup of inventory and store
+    # Initial setup of inventory
     product_list = [products.Product("MacBook Air M2", price=1450, quantity=100),
                     products.Product("Bose QuietComfort Earbuds", price=250, quantity=500),
                     products.Product("Google Pixel 7", price=500, quantity=250),
                     products.NonStockedProduct("Windows License", price=125),
                     products.LimitedProduct("Shipping", price=10, quantity=250, maximum=1)
                     ]
+
+    # Create promotion catalog
+    second_half_price = promotions.SecondHalfPrice("Second Half price!")
+    third_one_free = promotions.ThirdOneFree("Third One Free!")
+    thirty_percent = promotions.PercentDiscount("30% off!", percent=30)
+
+    # Add promotions to products
+    product_list[0].set_promotion(second_half_price)
+    product_list[1].set_promotion(third_one_free)
+    product_list[3].set_promotion(thirty_percent)
+
+    # Initial setup of the shop
     best_buy = store.Store(product_list)
+
     # Start shop
     start(best_buy)
