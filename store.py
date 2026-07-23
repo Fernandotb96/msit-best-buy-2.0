@@ -16,6 +16,15 @@ class Store:
                 raise ValueError("All elements in the list must be Product instances.")
             self.products_list = products_list
 
+    def __contains__(self, product):
+        return product in self.products_list
+
+    def __add__(self, other):
+        """Support 'store1 + store2'. Return a new Store instance with products from both."""
+        if not isinstance(other, Store):
+            raise TypeError(f"{other} is not an instance of Store.")
+        return Store(self.products_list + other.products_list)
+
     def add_product(self, product):
         """Add a product to the store."""
         if not isinstance(product, Product):

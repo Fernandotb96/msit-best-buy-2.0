@@ -24,7 +24,7 @@ class Product:
 
     def __str__(self):
         promotion_text = f", Promotion: {self.promotion.name}" if self.promotion else ""
-        return f"{self.name}, Price: ${self.price} Quantity:{self.quantity}{promotion_text}"
+        return f"{self.name}, Price: ${self.price} Quantity: {self.quantity}{promotion_text}"
 
     def __gt__(self, other):
         if not isinstance(other, Product):

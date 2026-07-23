@@ -69,7 +69,8 @@ def make_order(shop):
     except ValueError as e:
         print(f"Order error: {e}")
         total_shopping = 0
-    print(f"Order processed successfully! Total payment: {total_shopping}$")
+    if total_shopping:
+        print(f"Order processed successfully! Total payment: {total_shopping}$")
 
 
 def start(shop):
