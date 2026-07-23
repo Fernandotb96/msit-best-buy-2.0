@@ -15,7 +15,7 @@ class Product:
             raise ValueError("Quantity cannot be negative.")
         self.name = name
         self._price = price
-        self.quantity = quantity
+        self._quantity = quantity
         self.promotion = None
         if self.quantity > 0:
             self.active = True
@@ -38,7 +38,6 @@ class Product:
 
     @property
     def price(self):
-        """Current price of the product."""
         return self._price
 
     @price.setter
@@ -46,6 +45,20 @@ class Product:
         if new_price < 0:
             raise ValueError("Price cannot be negative.")
         self._price = new_price
+
+    @property
+    def quantity(self):
+        return self._quantity
+
+    @quantity.setter
+    def quantity(self, new_quantity):
+        if new_quantity < 0:
+            raise ValueError("Quantity cannot be negative.")
+        self._quantity = new_quantity
+        if self._quantity <= 0:
+            self.deactivate()
+        else:
+            self.activate()
 
     def activate(self):
         """Mark the product as active."""
@@ -59,18 +72,6 @@ class Product:
         """Return whether the product is currently active."""
         return self.active
 
-    def get_quantity(self):
-        """Return the current quantity of the product in stock."""
-        return self.quantity
-
-    def set_quantity(self, quantity):
-        """Add or remove units from the stock and update the status if no more units are in stock."""
-        self.quantity += quantity
-        if self.quantity <= 0:
-            self.deactivate()
-        else:
-            self.activate()
-
     def get_promotion(self):
         """Return the promotion currently applied to this product, or None."""
         return self.promotion
@@ -81,7 +82,7 @@ class Product:
             raise ValueError("Promotion must be an instance of Promotion (or None).")
         self.promotion = promotion
 
-    def get_price(self, quantity):
+    def get_final_price(self, quantity):
         """
         Return the total price for buying `quantity` units, applying the
         current promotion if one is set, otherwise the regular price.
@@ -105,8 +106,8 @@ class Product:
         if requested_quantity > self.quantity:
             print(f"Not enough products in store, only {self.quantity} in stock.")
             return 0.0
-        self.set_quantity(-requested_quantity)
-        return self.get_price(requested_quantity)
+        self.quantity -= requested_quantity
+        return self.get_final_price(requested_quantity)
 
 
 class NonStockedProduct(Product):
@@ -122,9 +123,15 @@ class NonStockedProduct(Product):
         promotion_text = f", Promotion: {self.promotion.name}" if self.promotion else ""
         return f"{self.name}, Price: ${self.price} Quantity: Unlimited{promotion_text}"
 
-    def set_quantity(self, quantity):
-        """Non-stocked products always keep their quantity unchanged to zero."""
-        self.quantity = 0
+    @property
+    def quantity(self):
+        """Always zero: non-stocked products have unlimited, untracked stock."""
+        return self._quantity
+
+    @quantity.setter
+    def quantity(self, value):
+        """Non-stocked products ignore quantity changes; quantity always stays at zero."""
+        self._quantity = 0
 
     def buy(self, requested_quantity):
         """
@@ -137,7 +144,7 @@ class NonStockedProduct(Product):
         if not self.is_active():
             print("Product inactive or out of stock!")
             return 0.0
-        return self.get_price(requested_quantity)
+        return self.get_final_price(requested_quantity)
 
 
 class LimitedProduct(Product):

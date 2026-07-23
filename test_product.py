@@ -9,7 +9,7 @@ def test_create_normal_product():
 
     assert product.name == "Asus Expertbook"
     assert product.price == 750.0
-    assert product.get_quantity() == 25
+    assert product.quantity == 25
     assert product.is_active() is True
 
 
@@ -35,7 +35,7 @@ def test_product_quantity_zero():
     mouse = Product("Mouse", 50.0, 1)
     mouse.buy(1)
 
-    assert mouse.get_quantity() == 0
+    assert mouse.quantity == 0
     assert mouse.is_active() is False
 
 
@@ -46,7 +46,7 @@ def test_buy_product():
     total_price = monitor.buy(3)
 
     assert total_price == 600.0
-    assert monitor.get_quantity() == 7
+    assert monitor.quantity == 7
 
 
 # Test that buying a larger quantity than exists invokes exception.
@@ -56,7 +56,7 @@ def test_buy_too_large_quantity():
     total_price = headphones.buy(10)
 
     assert total_price == 0.0
-    assert headphones.get_quantity() == 5
+    assert headphones.quantity == 5
 
 
 # In console: py -m pytest -v
