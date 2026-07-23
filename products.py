@@ -22,10 +22,19 @@ class Product:
         else:
             self.active = False
 
-    def show(self):
-        """Print the product information, including the promotion if there is one."""
+    def __str__(self):
         promotion_text = f", Promotion: {self.promotion.name}" if self.promotion else ""
-        print(f"{self.name}, Price: {self.price}, Quantity: {self.quantity}{promotion_text}")
+        return f"{self.name}, Price: ${self.price} Quantity:{self.quantity}{promotion_text}"
+
+    def __gt__(self, other):
+        if not isinstance(other, Product):
+            raise TypeError(f"{other} is not an instance of Product.")
+        return self.price > other.price
+
+    def __lt__(self, other):
+        if not isinstance(other, Product):
+            raise TypeError(f"{other} is not an instance of Product.")
+        return self.price < other.price
 
     def activate(self):
         """Mark the product as active."""
@@ -98,10 +107,9 @@ class NonStockedProduct(Product):
         super().__init__(name, price, quantity=0)
         self.activate()
 
-    def show(self):
-        """Print the product information but quantity is unlimited."""
+    def __str__(self):
         promotion_text = f", Promotion: {self.promotion.name}" if self.promotion else ""
-        print(f"{self.name}, Price: {self.price}, Quantity: Unlimited{promotion_text}")
+        return f"{self.name}, Price: ${self.price} Quantity: Unlimited{promotion_text}"
 
     def set_quantity(self, quantity):
         """Non-stocked products always keep their quantity unchanged to zero."""
@@ -132,11 +140,10 @@ class LimitedProduct(Product):
         super().__init__(name, price, quantity)
         self.maximum = maximum
 
-    def show(self):
-        """Print the product information and how many units can be purchased."""
+    def __str__(self):
         promotion_text = f", Promotion: {self.promotion.name}" if self.promotion else ""
-        print(f"{self.name}, Price: {self.price}, Quantity: {self.quantity}, "
-              f"Limited to {self.maximum} per order{promotion_text}")
+        return (f"{self.name}, Price: ${self.price} Quantity:{self.quantity}, "
+                f"Limited to {self.maximum} per order{promotion_text}")
 
     def buy(self, requested_quantity):
         """Purchase a given quantity of the product, only up to the maximum allowed per order."""

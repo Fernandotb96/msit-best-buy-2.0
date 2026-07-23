@@ -20,10 +20,7 @@ def print_products_stock(shop):
     print("----- Products in stock -----")
     shop_products = shop.get_all_products()
     for index, product in enumerate(shop_products, start=1):
-        promotion = product.get_promotion()
-        promotion_text = f", Promotion: {promotion.name}" if promotion else ""
-        print(f"{index}. {product.name}, Price: ${product.price}, "
-              f"Quantity: {product.quantity}{promotion_text}")
+        print(f"{index}. {product}")
     print("-" * 29)
 
 
