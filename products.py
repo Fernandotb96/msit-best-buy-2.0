@@ -14,7 +14,7 @@ class Product:
         if quantity < 0:
             raise ValueError("Quantity cannot be negative.")
         self.name = name
-        self.price = price
+        self._price = price
         self.quantity = quantity
         self.promotion = None
         if self.quantity > 0:
@@ -35,6 +35,17 @@ class Product:
         if not isinstance(other, Product):
             raise TypeError(f"{other} is not an instance of Product.")
         return self.price < other.price
+
+    @property
+    def price(self):
+        """Current price of the product."""
+        return self._price
+
+    @price.setter
+    def price(self, new_price):
+        if new_price < 0:
+            raise ValueError("Price cannot be negative.")
+        self._price = new_price
 
     def activate(self):
         """Mark the product as active."""
