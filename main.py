@@ -56,8 +56,8 @@ def make_order(shop):
         amount_choice = input("Enter the product amount you want to buy: ").strip()
         if amount_choice == "":
             break
-        if not amount_choice.isdigit() or int(amount_choice) < 0:
-            print("Error adding quantity! Must be a positive number.")
+        if not amount_choice.isdigit() or int(amount_choice) <= 0:
+            print("Error adding quantity! Must be a number greater than zero.")
             continue
         # Add order to cart
         selected_product = active_products[int(product_choice) - 1]

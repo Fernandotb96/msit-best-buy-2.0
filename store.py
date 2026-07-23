@@ -17,7 +17,7 @@ class Store:
             self.products_list = products_list
 
     def add_product(self, product):
-        """Add a product to the store"""
+        """Add a product to the store."""
         if not isinstance(product, Product):
             print("Invalid! Must be an instance of Product.")
             return
@@ -27,7 +27,7 @@ class Store:
         self.products_list.append(product)
 
     def remove_product(self, product):
-        """ Remove a product from the store."""
+        """Remove a product from the store."""
         if product in self.products_list:
             self.products_list.remove(product)
         else:

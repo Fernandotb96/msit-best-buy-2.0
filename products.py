@@ -44,7 +44,7 @@ class Product:
         return self.quantity
 
     def set_quantity(self, quantity):
-        """Add or remove units from the stock and updates the status if no more units in stock."""
+        """Add or remove units from the stock and update the status if no more units are in stock."""
         self.quantity += quantity
         if self.quantity <= 0:
             self.deactivate()
@@ -73,7 +73,8 @@ class Product:
     def buy(self, requested_quantity):
         """
         Purchase a given quantity of the product. Reduces the available stock
-        if enough units exist and returns the total price of the purchase.
+        if enough units exist and returns the total price of the purchase,
+        applying the product's promotion (if any) via get_price().
         """
         if not isinstance(requested_quantity, int) or requested_quantity <= 0:
             print("Invalid quantity! Must be a positive integer.")
@@ -138,7 +139,7 @@ class LimitedProduct(Product):
               f"Limited to {self.maximum} per order{promotion_text}")
 
     def buy(self, requested_quantity):
-        """Purchase a given quantity of the product, only purchase up to the maximum allowed."""
+        """Purchase a given quantity of the product, only up to the maximum allowed per order."""
         if requested_quantity > self.maximum:
             raise ValueError(f"Product '{self.name}' can only be purchased up to {self.maximum} time(s) per order.")
         return super().buy(requested_quantity)
