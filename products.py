@@ -17,10 +17,7 @@ class Product:
         self._price = price
         self._quantity = quantity
         self.promotion = None
-        if self.quantity > 0:
-            self.active = True
-        else:
-            self.active = False
+        self.active = self.quantity > 0
 
     def __str__(self):
         promotion_text = f", Promotion: {self.promotion.name}" if self.promotion else ""
@@ -91,20 +88,29 @@ class Product:
             return self.promotion.apply_promotion(self, quantity)
         return self.price * quantity
 
+    def can_buy(self, requested_quantity):
+        """
+        Check whether `requested_quantity` units of this product can currently
+        be purchased, without changing any state (stock is not touched).
+        Returns None if the purchase is valid, or a string explaining why not.
+        """
+        if not isinstance(requested_quantity, int) or requested_quantity <= 0:
+            return "Invalid quantity! Must be a positive integer."
+        if not self.is_active():
+            return "Product inactive or out of stock!"
+        if requested_quantity > self.quantity:
+            return f"Not enough products in store, only {self.quantity} in stock."
+        return None
+
     def buy(self, requested_quantity):
         """
         Purchase a given quantity of the product. Reduces the available stock
         if enough units exist and returns the total price of the purchase,
-        applying the product's promotion (if any) via get_price().
+        applying the product's promotion (if any) via get_final_price().
         """
-        if not isinstance(requested_quantity, int) or requested_quantity <= 0:
-            print("Invalid quantity! Must be a positive integer.")
-            return 0.0
-        if not self.is_active():
-            print("Product inactive or out of stock!")
-            return 0.0
-        if requested_quantity > self.quantity:
-            print(f"Not enough products in store, only {self.quantity} in stock.")
+        error = self.can_buy(requested_quantity)
+        if error:
+            print(error)
             return 0.0
         self.quantity -= requested_quantity
         return self.get_final_price(requested_quantity)
@@ -133,18 +139,13 @@ class NonStockedProduct(Product):
         """Non-stocked products ignore quantity changes; quantity always stays at zero."""
         self._quantity = 0
 
-    def buy(self, requested_quantity):
-        """
-        Purchase a given quantity of the non-stocked product.
-        Does not check or modify stock level, since it is unlimited.
-        """
+    def can_buy(self, requested_quantity):
+        """Non-stocked products have unlimited stock, so the stock-level check is skipped."""
         if not isinstance(requested_quantity, int) or requested_quantity <= 0:
-            print("Invalid quantity! Must be a positive integer.")
-            return 0.0
+            return "Invalid quantity! Must be a positive integer."
         if not self.is_active():
-            print("Product inactive or out of stock!")
-            return 0.0
-        return self.get_final_price(requested_quantity)
+            return "Product inactive or out of stock!"
+        return None
 
 
 class LimitedProduct(Product):
@@ -160,11 +161,11 @@ class LimitedProduct(Product):
 
     def __str__(self):
         promotion_text = f", Promotion: {self.promotion.name}" if self.promotion else ""
-        return (f"{self.name}, Price: ${self.price} Quantity:{self.quantity}, "
+        return (f"{self.name}, Price: ${self.price} Quantity: {self.quantity}, "
                 f"Limited to {self.maximum} per order{promotion_text}")
 
-    def buy(self, requested_quantity):
-        """Purchase a given quantity of the product, only up to the maximum allowed per order."""
+    def can_buy(self, requested_quantity):
+        """In addition to the base checks, enforce the per-order maximum."""
         if requested_quantity > self.maximum:
-            raise ValueError(f"Product '{self.name}' can only be purchased up to {self.maximum} time(s) per order.")
-        return super().buy(requested_quantity)
+            return f"Product '{self.name}' can only be purchased up to {self.maximum} time(s) per order."
+        return super().can_buy(requested_quantity)

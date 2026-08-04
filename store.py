@@ -52,13 +52,23 @@ class Store:
 
     def order(self, shopping_cart):
         """
-        Process a customer order returning the final price.
+        Process a customer order and return the total price.
         The shopping cart is a list holding tuples (product, quantity).
+
+        The order is all-or-nothing: first every item in the cart is validated,
+        if any item is invalid, a ValueError is raised and nothing is purchased.
+        Only when every item has passed validation, the actual purchase is made.
         """
+        # Validate the whole cart first, without changing any state.
+        for product, requested_quantity in shopping_cart:
+            if product not in self.products_list:
+                raise ValueError(f"Product {product.name} not in store.")
+            error = product.can_buy(requested_quantity)
+            if error:
+                raise ValueError(f"{product.name}: {error}")
+
+        # Execute the order
         total_price = 0
         for product, requested_quantity in shopping_cart:
-            if product in self.products_list:
-                total_price += product.buy(requested_quantity)
-            else:
-                print(f"Error: Product {product.name} not in store.")
+            total_price += product.buy(requested_quantity)
         return total_price

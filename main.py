@@ -2,13 +2,6 @@ import products
 import store
 import promotions
 
-# TODO! requirements.txt AND README.MD
-
-# TODO! 1. The order is not fully atomic. It processes items one at a time and buy() mutates stock as it goes,
-#  so if a later item fails (for example, a LimitedProduct exceeding its max per order), the exception propagates up,
-#  but earlier items in the same order already had their stock deducted - the order ends up partially applied instead
-#  of failing cleanly.
-
 
 def print_menu():
     """Display the main menu options."""
