@@ -2,6 +2,13 @@ import products
 import store
 import promotions
 
+# TODO! requirements.txt AND README.MD
+
+# TODO! 1. The order is not fully atomic. It processes items one at a time and buy() mutates stock as it goes,
+#  so if a later item fails (for example, a LimitedProduct exceeding its max per order), the exception propagates up,
+#  but earlier items in the same order already had their stock deducted - the order ends up partially applied instead
+#  of failing cleanly.
+
 
 def print_menu():
     """Display the main menu options."""
@@ -74,8 +81,10 @@ def make_order(shop):
 
 
 def start(shop):
-    """Start the Best Buy application.
-    Displays the main menu and handles user interaction."""
+    """
+    Start the Best Buy application.
+    Displays the main menu and handles user interaction.
+    """
     router = {
         "1": print_products_stock,
         "2": print_quantity,
@@ -95,8 +104,12 @@ def start(shop):
             print("Invalid choice! Please try again.")
 
 
-if __name__ == "__main__":
-    # Initial setup of inventory
+def create_store():
+    """
+    Build the initial product catalog, set up the promotions and attach
+    them to the products, and return a ready-to-use Store.
+    """
+    # Initial setup of products
     product_list = [products.Product("MacBook Air M2", price=1450, quantity=100),
                     products.Product("Bose QuietComfort Earbuds", price=250, quantity=500),
                     products.Product("Google Pixel 7", price=500, quantity=250),
@@ -115,7 +128,9 @@ if __name__ == "__main__":
     product_list[3].set_promotion(thirty_percent)
 
     # Initial setup of the shop
-    best_buy = store.Store(product_list)
+    return store.Store(product_list)
 
-    # Start shop
+
+if __name__ == "__main__":
+    best_buy = create_store()
     start(best_buy)
